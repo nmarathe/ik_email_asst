@@ -12,17 +12,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from langgraph.graph import StateGraph, END
-from langgraph.checkpoint.memory import MemorySaver
-
-from src.state import AgentState
-from src.agents.input_parser_agent import input_parser_node
-from src.agents.intent_detection_agent import intent_detection_node
-from src.agents.tone_stylist_agent import tone_stylist_node
-from src.agents.draft_writer_agent import draft_writer_node
-from src.agents.personalization_agent import personalization_node
-from src.agents.review_agent import review_node
-from src.agents.router_agent import route_after_review
+from src.workflow import compile_graph
 
 
 def setup_page():
@@ -35,33 +25,8 @@ def setup_page():
 
 
 @st.cache_resource
-def compile_graph():
-    workflow = StateGraph(AgentState)
-    workflow.add_node("parser", input_parser_node)
-    workflow.add_node("intent", intent_detection_node)
-    workflow.add_node("stylist", tone_stylist_node)
-    workflow.add_node("personalizer", personalization_node)
-    workflow.add_node("writer", draft_writer_node)
-    workflow.add_node("reviewer", review_node)
-
-    workflow.set_entry_point("parser")
-    workflow.add_edge("parser", "intent")
-    workflow.add_edge("intent", "stylist")
-    workflow.add_edge("stylist", "personalizer")
-    workflow.add_edge("personalizer", "writer")
-    workflow.add_edge("writer", "reviewer")
-
-    workflow.add_conditional_edges(
-        "reviewer",
-        route_after_review,
-        {
-            "rewrite": "writer",
-            "end": END
-        }
-    )
-
-    checkpointer = MemorySaver()
-    return workflow.compile(checkpointer=checkpointer)
+def get_workflow_app():
+    return compile_graph()
 
 
 def initialize_state():
@@ -123,7 +88,7 @@ def revise_email():
     if not feedback:
         st.warning("Please enter feedback before requesting a revision.")
         return
-    app = compile_graph()
+    app = get_workflow_app()
     revision_inputs = {
         "user_prompt": st.session_state.user_prompt,
         "recipient": st.session_state.recipient or "Recipient",
@@ -165,49 +130,6 @@ def reset_conversation():
     st.session_state.reset_flag = True
 
 
-def revise_email():
-    feedback = st.session_state.feedback_input.strip()
-    if not feedback:
-        st.warning("Please enter feedback before requesting a revision.")
-        return
-    app = compile_graph()
-    revision_inputs = {
-        "user_prompt": st.session_state.user_prompt,
-        "recipient": st.session_state.recipient or "Recipient",
-        "tone": st.session_state.tone,
-        "email_subject": st.session_state.email_subject or "",
-        "key_topics": st.session_state.final_output.get("key_topics", []),
-        "urgency": st.session_state.final_output.get("urgency", "Medium"),
-        "intent": st.session_state.final_output.get("intent", ""),
-        "tone_guidelines": st.session_state.final_output.get("tone_guidelines", ""),
-        "personalized_context": st.session_state.final_output.get("personalized_context", ""),
-        "draft": st.session_state.final_output.get("draft", ""),
-        "review_feedback": feedback,
-        "is_valid": False,
-        "revision_count": st.session_state.final_output.get("revision_count", 1) + 1
-    }
-    revision_config = {"configurable": {"thread_id": "email_chat_revision"}}
-
-    with st.spinner("Updating the draft with your feedback..."):
-        revised_output = app.invoke(revision_inputs, revision_config)
-
-    st.session_state.final_output = revised_output
-    st.session_state.chat_history.append(
-        {"role": "user", "content": f"**Feedback:** {feedback}"}
-    )
-    st.session_state.chat_history.append(
-        {
-            "role": "assistant",
-            "content": (
-                f"**Draft version {len([m for m in st.session_state.chat_history if m['role'] == 'assistant']) + 1}**\n\n"
-                f"**Subject:** {st.session_state.email_subject or 'No subject'}\n\n"
-                f"{revised_output.get('draft', 'No revised email generated.')}"
-            )
-        }
-    )
-    st.session_state.feedback_input = ""
-
-
 def run_ui():
     setup_page()
     initialize_state()
@@ -222,7 +144,7 @@ def run_ui():
         st.error("❌ `OPENAI_API_KEY` is missing from your `.env` file.")
         st.stop()
 
-    app = compile_graph()
+    app = get_workflow_app()
 
     with st.form("email_writer_form"):
         st.text_input("Recipient", placeholder="e.g., Sarah or Team", key="recipient")
