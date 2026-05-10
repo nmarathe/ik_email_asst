@@ -1,6 +1,6 @@
 import json
 import os
-from src.state import AgentState
+from src.agents.state import AgentState
 
 PERSONALIZATION_FILE = os.path.join(os.path.dirname(__file__), '..', '..', 
                                     'data', 'personalization.json')

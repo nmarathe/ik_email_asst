@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.memory import MemorySaver
 
-from src.state import AgentState
+from src.agents.state import AgentState
 from src.agents.input_parser_agent import input_parser_node
 from src.agents.intent_detection_agent import intent_detection_node
 from src.agents.tone_stylist_agent import tone_stylist_node

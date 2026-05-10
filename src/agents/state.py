@@ -1,5 +1,6 @@
 from typing import TypedDict, List
 
+
 class AgentState(TypedDict):
     """The shared, single source of truth for the entire agent pipeline."""
     user_prompt: str

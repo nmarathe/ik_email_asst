@@ -1,7 +1,7 @@
 import os
 import json
 from dotenv import load_dotenv
-from src.state import AgentState
+from src.agents.state import AgentState
 from langchain_openai import ChatOpenAI
 
 # Load environment variables
