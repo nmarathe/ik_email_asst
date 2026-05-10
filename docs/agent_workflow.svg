@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="420" viewBox="0 0 900 420">
+  <style>
+    .box { fill: #f8f8ff; stroke: #4b6d9a; stroke-width: 2; rx: 10; ry: 10; }
+    .text { font-family: Arial, sans-serif; font-size: 14px; fill: #1f2a44; }
+    .title { font-size: 18px; font-weight: bold; }
+    .arrow { stroke: #4b6d9a; stroke-width: 2; marker-end: url(#arrowhead); }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#4b6d9a" />
+    </marker>
+  </defs>
+
+  <text x="20" y="30" class="text title">Agent Workflow</text>
+
+  <rect x="20" y="60" width="140" height="70" class="box" />
+  <text x="30" y="90" class="text">User</text>
+  <text x="30" y="110" class="text">(submit brief)</text>
+
+  <rect x="200" y="60" width="160" height="70" class="box" />
+  <text x="210" y="90" class="text">Streamlit UI</text>
+  <text x="210" y="110" class="text">(send state)</text>
+
+  <rect x="420" y="60" width="140" height="70" class="box" />
+  <text x="430" y="90" class="text">Parser</text>
+  <text x="430" y="110" class="text">(parse input)</text>
+
+  <rect x="620" y="60" width="160" height="70" class="box" />
+  <text x="630" y="90" class="text">Intent</text>
+  <text x="630" y="110" class="text">(detect intent)</text>
+
+  <path d="M160 95 L200 95" class="arrow" />
+  <path d="M360 95 L420 95" class="arrow" />
+  <path d="M560 95 L620 95" class="arrow" />
+
+  <rect x="200" y="180" width="160" height="70" class="box" />
+  <text x="210" y="210" class="text">Stylist</text>
+  <text x="210" y="230" class="text">(tone guidance)</text>
+
+  <rect x="420" y="180" width="140" height="70" class="box" />
+  <text x="430" y="210" class="text">Personalizer</text>
+  <text x="430" y="230" class="text">(context)</text>
+
+  <rect x="620" y="180" width="160" height="70" class="box" />
+  <text x="630" y="210" class="text">Writer</text>
+  <text x="630" y="230" class="text">(generate draft)</text>
+
+  <path d="M300 205 L420 205" class="arrow" />
+  <path d="M560 205 L620 205" class="arrow" />
+
+  <rect x="360" y="300" width="220" height="70" class="box" />
+  <text x="370" y="330" class="text">Reviewer</text>
+  <text x="370" y="350" class="text">(check draft)</text>
+
+  <rect x="620" y="300" width="160" height="70" class="box" />
+  <text x="630" y="330" class="text">Router</text>
+  <text x="630" y="350" class="text">(rewrite/end)</text>
+
+  <path d="M700 235 L700 300" class="arrow" />
+  <path d="M560 335 L620 335" class="arrow" />
+
+  <path d="M680 320 C 690 320, 690 260, 620 260" class="arrow" />
+  <path d="M565 260 L620 260" class="arrow" />
+  <text x="540" y="250" class="text">if rewrite</text>
+
+  <path d="M730 335 L840 335" class="arrow" />
+  <text x="770" y="325" class="text">if end</text>
+
+  <rect x="840" y="300" width="60" height="70" class="box" />
+  <text x="845" y="330" class="text">UI</text>
+  <text x="845" y="350" class="text">(final draft)</text>
+</svg>

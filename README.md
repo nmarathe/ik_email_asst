@@ -16,6 +16,10 @@ A Streamlit-based email drafting assistant that uses LangGraph and OpenAI to gen
 - `main.py`
   - Example entry point to compile the workflow and run a sample email generation.
 
+## Agent Workflow Sequence
+
+![Agent Workflow Diagram](docs/agent_workflow.svg)
+
 ## Requirements
 
 - Python 3.10+ (recommended)
