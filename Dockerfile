@@ -1,6 +1,5 @@
 # Stage 1: Build & Dependencies
 FROM python:3.11-slim as builder
-
 WORKDIR /app
 
 # Install system dependencies if required for compiling certain wheels
@@ -15,21 +14,24 @@ COPY requirements.txt .
 # Install dependencies into a wheels cache or directly
 RUN pip install --no-cache-dir --user -r requirements.txt
 
+
 # Stage 2: Final Runtime
 FROM python:3.11-slim as runner
-
 WORKDIR /app
 
-# Create a non-privileged system user for security
+# 1. Create the system user AND explicitly build the home directory
 RUN groupadd -g 10001 appuser && \
-    useradd -u 10001 -g appuser -s /bin/sh appuser
+    useradd -u 10001 -g appuser -m -s /bin/sh appuser && \
+    mkdir -p /home/appuser/.streamlit
 
-# Copy installed Python packages from builder stage
-COPY --from=builder /root/.local /home/appuser/.local
-COPY . .
+# 2. Copy dependencies and application files, granting ownership during the copy
+COPY --from=builder --chown=appuser:appuser /root/.local /home/appuser/.local
+COPY --chown=appuser:appuser . .
 
-# Set permissions for the non-root user
-RUN chown -R appuser:appuser /app
+# 3. Ensure full directory ownership for safety
+RUN chown -R appuser:appuser /app /home/appuser
+
+# Switch to the non-root user
 USER appuser
 
 # Expose Streamlit's default port
